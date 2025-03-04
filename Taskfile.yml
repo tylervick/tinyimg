@@ -1,0 +1,73 @@
+# https://taskfile.dev
+
+version: '3'
+
+env:
+  GOROOT:
+    sh: go env GOROOT
+  TINYGOROOT:
+    sh: tinygo env TINYGOROOT || true
+
+tasks:
+  install:wasmtime:
+    cmds:
+      - curl https://wasmtime.dev/install.sh -sSf | bash
+
+  install:tinygo:
+    cmds:
+      - wget https://github.com/tinygo-org/tinygo/releases/download/v0.36.0/tinygo_0.36.0_arm64.deb
+      - sudo dpkg -i tinygo_0.36.0_arm64.deb
+      - rm tinygo_0.36.0_arm64.deb
+
+  install:binaryen:
+    status:
+      - which wasm-opt
+    cmds:
+      - wget https://github.com/WebAssembly/binaryen/releases/download/version_122/binaryen-version_122-aarch64-linux.tar.gz
+      - tar -xf binaryen-version_122-aarch64-linux.tar.gz
+      - rm binaryen-version_122-aarch64-linux.tar.gz
+      - mkdir -p ~/.local/bin
+      - mv binaryen-version_122/bin/* ~/.local/bin
+      - rm -rf  binaryen-version_122
+      - wasm-opt --version
+
+  build:
+    env:
+      GOOS: js
+      GOARCH: wasm
+    cmds:
+      - rm -rf build
+      - mkdir -p build
+      - cp frontend/* build/
+      - cp "$GOROOT/misc/wasm/wasm_exec.js" build/runner.js
+      - go build -o build/frontend.wasm {{.CLI_ARGS}}
+      - ls -lah ./build/frontend.wasm
+
+  tiny_build:
+    cmds:
+      - rm -rf build
+      - mkdir -p build
+      - cp frontend/* build/
+      - cp "$TINYGOROOT/targets/wasm_exec.js" build/runner.js
+      - tinygo build -target=wasm -o build/frontend.wasm {{.CLI_ARGS}}
+      - ls -lah ./build/frontend.wasm
+
+  optimize:
+    cmds:
+      - wasm-opt -Oz -o build/frontend.wasm build/frontend.wasm
+      - ls -lah ./build/frontend.wasm
+
+  serve:
+    cmds:
+      - go run ./server
+
+  wasi:build:
+    cmds:
+      - tinygo build -target=wasi -o wasi.wasm ./wasi
+      - ls -lah wasi.wasm
+
+  wasi:run:
+    cmds:
+      - wasmtime --dir . wasi.wasm
+      - cat log.txt
+      - rm log.txt
