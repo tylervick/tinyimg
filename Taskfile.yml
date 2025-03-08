@@ -16,7 +16,7 @@ tasks:
   install:tinygo:
     cmds:
       - wget https://github.com/tinygo-org/tinygo/releases/download/v0.36.0/tinygo_0.36.0_arm64.deb
-      - sudo dpkg -i tinygo_0.36.0_arm64.deb
+      - dpkg -i tinygo_0.36.0_arm64.deb
       - rm tinygo_0.36.0_arm64.deb
 
   install:binaryen:
@@ -26,9 +26,8 @@ tasks:
       - wget https://github.com/WebAssembly/binaryen/releases/download/version_122/binaryen-version_122-aarch64-linux.tar.gz
       - tar -xf binaryen-version_122-aarch64-linux.tar.gz
       - rm binaryen-version_122-aarch64-linux.tar.gz
-      - mkdir -p ~/.local/bin
-      - mv binaryen-version_122/bin/* ~/.local/bin
-      - rm -rf  binaryen-version_122
+      - mv binaryen-version_122/bin/* /usr/local/bin
+      - rm -rf binaryen-version_122
       - wasm-opt --version
 
   build:
@@ -39,7 +38,7 @@ tasks:
       - rm -rf build
       - mkdir -p build
       - cp frontend/* build/
-      - cp "$GOROOT/misc/wasm/wasm_exec.js" build/runner.js
+      - cp "$GOROOT/lib/wasm/wasm_exec.js" build/runner.js
       - go build -o build/frontend.wasm {{.CLI_ARGS}}
       - ls -lah ./build/frontend.wasm
 
@@ -71,3 +70,16 @@ tasks:
       - wasmtime --dir . wasi.wasm
       - cat log.txt
       - rm log.txt
+
+  build:tiff2jpeg:
+    env:
+      GOOS: js
+      GOARCH: wasm
+    cmds:
+      - rm -rf build
+      - mkdir -p build
+      - cp frontend/* build/
+      - cp "$GOROOT/lib/wasm/wasm_exec.js" build/runner.js
+      - go build -o build/frontend.wasm ./pkg/wasm/tiff2jpeg.go
+      - ls -lah ./build/frontend.wasm
+      - echo "TIFF to JPEG converter built successfully"

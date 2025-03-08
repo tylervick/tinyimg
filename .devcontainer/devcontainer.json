@@ -2,7 +2,7 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/go
 {
 	"name": "tinyimg",
-	"image": "mcr.microsoft.com/devcontainers/go",
+	"image": "golang:1.24.0",
 	"features": {
 		"ghcr.io/devcontainers-extra/features/go-task:1": {}
 	},
@@ -10,7 +10,7 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
-	"onCreateCommand": "task install:tinygo",
+	// "onCreateCommand": "task install:tinygo",
 
 	"customizations": {
     "vscode": {

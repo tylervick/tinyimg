@@ -2,9 +2,60 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <script src="./runner.js"></script>
+    <script src="./tiff2jpeg.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        margin-top: 20px;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      h1 {
+        color: #333;
+      }
+      input[type="file"] {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 100%;
+        margin-bottom: 20px;
+      }
+      .download-button {
+        display: inline-block;
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 15px;
+        text-decoration: none;
+        border-radius: 4px;
+        margin-top: 10px;
+      }
+      .download-button:hover {
+        background-color: #45a049;
+      }
+      .error {
+        color: #f44336;
+        font-weight: bold;
+      }
+      progress {
+        height: 20px;
+        border-radius: 4px;
+      }
+    </style>
   </head>
   <body>
-    <script src="./loader.js"></script>
+    <h1>TIFF to JPEG Converter</h1>
+    <p>Select a TIFF image to convert it to JPEG. The conversion happens in a separate thread to keep the UI responsive.</p>
+    
+    <input type="file" id="tiffInput" accept=".tiff,.tif" onchange="handleFileInput(this)" />
+    
+    <div class="container" id="result"></div>
   </body>
 </html>

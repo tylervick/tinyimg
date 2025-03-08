@@ -1,15 +1,2 @@
-if (!WebAssembly.instantiateStreaming) { // polyfill
-  WebAssembly.instantiateStreaming = async (resp, importObject) => {
-      const source = await (await resp).arrayBuffer();
-      return await WebAssembly.instantiate(source, importObject);
-  };
-}
-
-const go = new Go();
-WebAssembly.instantiateStreaming(fetch("frontend.wasm"), go.importObject).then(
-  async result => {
-      mod = result.module;
-      inst = result.instance;
-      await go.run(inst);
-  }
-);
+// This file is no longer needed as we're using Web Workers
+// The worker will handle loading the WASM module
