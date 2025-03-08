@@ -1,0 +1,29 @@
+{
+  "name": "tinyimg-ts",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/tiff2jpeg.umd.js",
+  "module": "./dist/tiff2jpeg.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/tiff2jpeg.es.js",
+      "require": "./dist/tiff2jpeg.umd.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/emscripten": "^1.40.0",
+    "@types/golang-wasm-exec": "^1.15.2",
+    "@types/node": "^22.13.10",
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0"
+  }
+}

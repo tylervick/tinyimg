@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TIFF to JPEG Converter</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Op
+Sans', 'Helvetica Neue', sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .container {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 5px;
+    }
+    progress {
+      width: 100%;
+      height: 20px;
+    }
+    img {
+      max-width: 100%;
+      margin-top: 20px;
+    }
+    .button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>TIFF to JPEG Converter</h1>
+
+  <div class="container">
+    <h2>Upload TIFF File</h2>
+    <input type="file" id="tiffFile" accept=".tif,.tiff" />
+    <button id="convertButton" class="button">Convert</button>
+
+    <h3>Progress</h3>
+    <progress id="progressBar" value="0" max="100">0%</progress>
+
+    <div id="result">
+      <h3>Result</h3>
+      <div id="imageContainer"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import tiff2jpeg from './src/main.ts';
+
+    document.getElementById('convertButton').addEventListener('click', async () => {
+      const fileInput = document.getElementById('tiffFile');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert('Please select a TIFF file');
+        return;
+      }
+
+      try {
+        // Clear previous result
+        document.getElementById('imageContainer').innerHTML = '';
+
+        // Convert the file
+        const jpegBase64 = await tiff2jpeg.streamTiffToJpeg(file);
+
+        // Display the result
+        const img = document.createElement('img');
+        img.src = 'data:image/jpeg;base64,' + jpegBase64;
+        document.getElementById('imageContainer').appendChild(img);
+      } catch (error) {
+        console.error('Conversion failed:', error);
+        alert('Conversion failed: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
