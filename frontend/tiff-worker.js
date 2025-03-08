@@ -1,6 +1,7 @@
 importScripts('./runner.js');
 
 let isInitialized = false;
+let exports = null;
 
 self.onmessage = async function(e) {
   const { type, requestId, data } = e.data;
@@ -24,7 +25,7 @@ self.onmessage = async function(e) {
         if (!isInitialized) {
           throw new Error('WASM module not initialized');
         }
-        startChunkedConversion();
+        exports.startChunkedConversion();
         self.postMessage({ type: 'result', requestId, success: true });
         break;
 
@@ -45,7 +46,12 @@ self.onmessage = async function(e) {
         if (!isInitialized) {
           throw new Error('WASM module not initialized');
         }
-        const result = finishChunkedConversion();
+        const resultPtr = exports.finishChunkedConversion();
+        if (resultPtr === 0) {
+          throw new Error('Chunked conversion failed');
+        }
+        console.log('Chunked conversion result:', resultPtr);
+        const result = readStringFromMemory(resultPtr);
         self.postMessage({ type: 'result', requestId, jpegBase64: result });
         break;
 
@@ -79,6 +85,7 @@ self.onmessage = async function(e) {
        go.importObject
      );
      go.run(result.instance);
+     exports = result.instance.exports;
      isInitialized = true;
      console.log('WASM module initialized in worker');
    } catch (error) {
@@ -86,3 +93,26 @@ self.onmessage = async function(e) {
      throw error;
    }
  }
+
+ function readStringFromMemory(ptr) {
+  if (ptr === 0) return null;
+
+  let memory;
+  if (exports.mem) {
+    memory = new Uint8Array(exports.mem.buffer);
+  } else {
+    memory = new Uint8Array(exports.memory.buffer);
+  }
+
+  let end = ptr;
+
+  // Find the end of the string (null terminator)
+  while (memory[end] !== 0) {
+    end++;
+  }
+
+  // Extract the string data
+  const bytes = memory.slice(ptr, end);
+  const decoder = new TextDecoder();
+  return decoder.decode(bytes);
+}

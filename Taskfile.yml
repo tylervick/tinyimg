@@ -48,7 +48,7 @@ tasks:
       - mkdir -p build
       - cp frontend/* build/
       - cp "$TINYGOROOT/targets/wasm_exec.js" build/runner.js
-      - tinygo build -target=wasm -o build/frontend.wasm {{.CLI_ARGS}}
+      - tinygo build -target=wasm -o build/frontend.wasm ./pkg/wasm/tiff2jpeg.go
       - ls -lah ./build/frontend.wasm
 
   optimize:

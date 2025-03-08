@@ -17,11 +17,27 @@
       "extensions": [
         "-GitHub.copilot-chat",
         "-GitHub.vscode-pull-request-github",
-        "streetsidesoftware.code-spell-checker"
+        "esbenp.prettier-vscode",
+        "golang.go",
+        "streetsidesoftware.code-spell-checker",
+        "vscode-icons-team.vscode-icons"
       ],
       "settings": {
         "github.copilot.chat.useProjectTemplates": false,
         "github.copilot.chat.welcomeMessage": "never",
+        "go.useLanguageServer": true,
+        "go.lintTool": "golangci-lint",
+        "go.lintOnSave": "package",
+        "[go]": {
+          "editor.codeActionsOnSave": {
+              "source.organizeImports": "always"
+          }
+        },
+        "gopls": {
+          "usePlaceholders": false,
+          "staticcheck": true,
+          "formatting.gofumpt": true
+        },
         "workbench.editor.empty.hint": "hidden"
       }
     }
