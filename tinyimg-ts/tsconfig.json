@@ -16,6 +16,9 @@
     "noEmit": true,
     "sourceMap": true,
     // "resolveJsonModule": true,
+    "declaration": true,
+    "declarationDir": "dist",
+    "emitDeclarationOnly": false,
 
     /* Linting */
     "strict": true,
