@@ -59,6 +59,10 @@ Sans', 'Helvetica Neue', sans-serif;
 
   <script type="module">
     import tiff2jpeg from './src/main.ts';
+    const t = new tiff2jpeg();
+
+    console.log(t);
+    t.initialize()
 
     document.getElementById('convertButton').addEventListener('click', async () => {
       const fileInput = document.getElementById('tiffFile');

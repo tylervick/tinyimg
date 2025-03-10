@@ -29,4 +29,5 @@
     "noImplicitReturns": true,
   },
   "include": ["src"],
+  "exclude": ["src/wasm/wasm_exec.js"]
 }

@@ -1,9 +1,3 @@
-import tiff2jpeg from './lib/tiff2jpeg';
+import WorkerExecutor from './lib/executor';
 
-export default tiff2jpeg;
-
-declare global {
-  interface Window {
-    tinyimg: typeof tiff2jpeg;
-  }
-}
+export default WorkerExecutor;
