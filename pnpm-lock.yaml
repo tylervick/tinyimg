@@ -8,6 +8,12 @@ importers:
 
   .:
     devDependencies:
+      '@go-task/cli':
+        specifier: ^3.42.0
+        version: 3.42.0
+
+  ts-lib:
+    devDependencies:
       '@types/golang-wasm-exec':
         specifier: ^1.15.2
         version: 1.15.2
@@ -192,6 +198,13 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@go-task/cli@3.42.0':
+    resolution: {integrity: sha512-Rgiye2JMpKW7uuZ60hCcg9VZZ+qD7T3/5Q0SFPXmlw2RrmqLroTHBP4eY5HkvbPjlumRWFUzCzijn9qtHMFP3Q==}
+
+  '@go-task/go-npm@0.2.0':
+    resolution: {integrity: sha512-vQbdtBvesHm8EUFHX8QKg4rbBodmu9VsAXH1ozpbiN5jdTMOYHTCMM31EurAYmY+rNNtxJQ4JGy6t383RPlqbw==}
+    hasBin: true
 
   '@jridgewell/sourcemap-codec@1.5.0':
     resolution: {integrity: sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ==}
@@ -783,6 +796,12 @@ snapshots:
 
   '@esbuild/win32-x64@0.25.0':
     optional: true
+
+  '@go-task/cli@3.42.0':
+    dependencies:
+      '@go-task/go-npm': 0.2.0
+
+  '@go-task/go-npm@0.2.0': {}
 
   '@jridgewell/sourcemap-codec@1.5.0': {}
 

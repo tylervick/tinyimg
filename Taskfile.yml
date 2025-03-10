@@ -8,78 +8,51 @@ env:
   TINYGOROOT:
     sh: tinygo env TINYGOROOT || true
 
+includes:
+  go-wasm:
+    taskfile: ./go-wasm/Taskfile.yml
+    dir: ./go-wasm
+
 tasks:
-  install:wasmtime:
-    cmds:
-      - curl https://wasmtime.dev/install.sh -sSf | bash
-
-  install:tinygo:
-    cmds:
-      - wget https://github.com/tinygo-org/tinygo/releases/download/v0.36.0/tinygo_0.36.0_arm64.deb
-      - dpkg -i tinygo_0.36.0_arm64.deb
-      - rm tinygo_0.36.0_arm64.deb
-
-  install:binaryen:
-    status:
-      - which wasm-opt
-    cmds:
-      - wget https://github.com/WebAssembly/binaryen/releases/download/version_122/binaryen-version_122-aarch64-linux.tar.gz
-      - tar -xf binaryen-version_122-aarch64-linux.tar.gz
-      - rm binaryen-version_122-aarch64-linux.tar.gz
-      - mv binaryen-version_122/bin/* /usr/local/bin
-      - rm -rf binaryen-version_122
-      - wasm-opt --version
-
   build:
-    env:
-      GOOS: js
-      GOARCH: wasm
     cmds:
-      - rm -rf build
-      - mkdir -p build
-      - cp frontend/* build/
-      - cp "$GOROOT/lib/wasm/wasm_exec.js" build/runner.js
-      - go build -o build/frontend.wasm {{.CLI_ARGS}}
-      - ls -lah ./build/frontend.wasm
+      - task: build:go
+      - task: copy:wasm
+      - task: build:ts
 
-  tiny_build:
+  copy:wasm:
+    desc: 'Copy WASM and wasm_exec.js to TS project'
     cmds:
-      - rm -rf build
-      - mkdir -p build
-      - cp frontend/* build/
-      - cp "$TINYGOROOT/targets/wasm_exec.js" build/runner.js
-      - tinygo build -target=wasm -o build/frontend.wasm ./pkg/wasm/tiff2jpeg.go
-      - ls -lah ./build/frontend.wasm
+      - mkdir -p ts-lib/src/wasm
+      - cp go-wasm/dist/wasm_exec.js ts-lib/src/wasm/wasm_exec.js
+      - cp go-wasm/dist/tinyimg.wasm ts-lib/src/wasm/tinyimg.wasm
 
-  optimize:
+  build:go:
+    desc: 'Build WASM binary and include wasm_exec.js'
     cmds:
-      - wasm-opt -Oz -o build/frontend.wasm build/frontend.wasm
-      - ls -lah ./build/frontend.wasm
+      - task: go-wasm:build
 
-  serve:
+  build:ts:
+    desc: 'Build TypeScript library'
+    dir: ts-lib
     cmds:
-      - go run ./server
+      - pnpm build
+    deps: ['copy:wasm']
 
-  wasi:build:
+  clean:
+    desc: Clean all build artifacts
     cmds:
-      - tinygo build -target=wasi -o wasi.wasm ./wasi
-      - ls -lah wasi.wasm
+      - task: clean:go
+      - task: clean:ts
 
-  wasi:run:
+  clean:go:
+    desc: 'Remove compiled WASM artifacts'
+    dir: go-wasm
     cmds:
-      - wasmtime --dir . wasi.wasm
-      - cat log.txt
-      - rm log.txt
+      - rm -rf dist
 
-  build:tiff2jpeg:
-    env:
-      GOOS: js
-      GOARCH: wasm
+  clean:ts:
+    desc: 'Remove TypeScript build artifacts'
+    dir: ts-lib
     cmds:
-      - rm -rf build
-      - mkdir -p build
-      - cp frontend/* build/
-      - cp "$GOROOT/lib/wasm/wasm_exec.js" build/runner.js
-      - go build -o build/frontend.wasm ./pkg/wasm/tiff2jpeg.go
-      - ls -lah ./build/frontend.wasm
-      - echo "TIFF to JPEG converter built successfully"
+      - rm -rf dist

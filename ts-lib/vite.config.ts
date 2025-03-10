@@ -21,7 +21,6 @@ export default defineConfig({
   worker: {
     format: 'es',
   },
-  publicDir: 'public',
   // configure dev server
   server: {
     port: 3000,

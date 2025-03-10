@@ -1,4 +1,4 @@
-import wasmUrl from '../lib/frontend.wasm?no-inline';
+import wasmUrl from '../wasm/tinyimg.wasm?no-inline';
 
 export type TaskResult<O, E extends Error = Error> =
   | {
