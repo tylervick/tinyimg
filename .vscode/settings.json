@@ -3,11 +3,11 @@
   // set os and arch to be able to use `syscall/js` and run tests
   "go.toolsEnvVars": {
     "GOARCH": "wasm",
-    "GOOS": "js",
+    "GOOS": "js"
   },
   "go.testEnvVars": {
     "GOARCH": "wasm",
-    "GOOS": "js",
+    "GOOS": "js"
   },
   // run tests in a headless chromium
   "go.testFlags": ["-exec=wasmbrowsertest"],
@@ -18,7 +18,5 @@
   "go.coverOnSingleTest": false,
   "go.coverOnTestPackage": false,
   "go.coverOnSingleTestFile": false,
-  "cSpell.words": [
-    "tinyimg"
-  ],
+  "cSpell.words": ["tinyimg"]
 }

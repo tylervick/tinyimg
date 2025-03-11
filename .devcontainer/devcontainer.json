@@ -1,18 +1,18 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/go
 {
-	"name": "tinyimg",
-	"image": "golang:1.24.0",
-	"features": {
-		"ghcr.io/devcontainers-extra/features/go-task:1": {}
-	},
+  "name": "tinyimg",
+  "image": "golang:1.24.0",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/go-task:1": {}
+  },
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [],
 
-	// "onCreateCommand": "task install:tinygo",
+  // "onCreateCommand": "task install:tinygo",
 
-	"customizations": {
+  "customizations": {
     "vscode": {
       "extensions": [
         "-GitHub.copilot-chat",
@@ -30,7 +30,7 @@
         "go.lintOnSave": "package",
         "[go]": {
           "editor.codeActionsOnSave": {
-              "source.organizeImports": "always"
+            "source.organizeImports": "always"
           }
         },
         "gopls": {

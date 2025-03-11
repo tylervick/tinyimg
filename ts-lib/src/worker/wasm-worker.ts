@@ -44,7 +44,7 @@ async function runConvertTask(file: File): Promise<Blob> {
   const wasmMemory = new Uint8Array(
     wasmExports.mem.buffer,
     ptr,
-    buf.byteLength
+    buf.byteLength,
   );
   wasmMemory.set(new Uint8Array(buf));
   const resultStructPtr = wasmExports.Convert(ptr, buf.byteLength);
@@ -76,7 +76,7 @@ async function runConvertTask(file: File): Promise<Blob> {
 // So that the memory is allocated in the worker thread instead of the main thread
 async function readFileIntoBuffer(
   file: File,
-  buffer: Uint8Array
+  buffer: Uint8Array,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

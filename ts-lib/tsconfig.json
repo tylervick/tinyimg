@@ -26,7 +26,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "noImplicitReturns": true,
+    "noImplicitReturns": true
   },
   "include": ["src"],
   "exclude": ["src/wasm/wasm_exec.js"]

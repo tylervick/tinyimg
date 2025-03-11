@@ -43,7 +43,7 @@ export default class WorkerExecutor {
     const module = await WebAssembly.compileStreaming(fetch(wasmUrl));
     this.worker = new Worker(
       new URL('../worker/wasm-worker.ts', import.meta.url),
-      { type: 'module' }
+      { type: 'module' },
     );
     await this.sendToWorker({
       type: 'init',
