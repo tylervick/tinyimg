@@ -86,54 +86,10 @@ export default class WorkerExecutor {
     if (!crossOriginIsolated) {
       throw new Error('Cross-origin isolation is not enabled');
     }
-    const sharedArrayBuffer = new SharedArrayBuffer(file.size);
-    const sharedArray = new Uint8Array(sharedArrayBuffer);
 
-    await readFileIntoBuffer(file, sharedArray);
-
-    const wk = await this.sendToWorker({
+    return await this.sendToWorker({
       type: 'convert',
-      input: sharedArrayBuffer,
-    } as ConvertTask);
-
-    return wk;
+      input: file,
+    });
   }
-}
-
-// TODO: It might be more efficient to pass the File to the worker (as a transferable object) first,
-// So that the memory is allocated in the worker thread instead of the main thread
-async function readFileIntoBuffer(
-  file: File,
-  buffer: Uint8Array
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    const chunkSize = 1024 * 1024; // 1MB chunks
-    let offset = 0;
-
-    const readNextChunk = () => {
-      const slice = file.slice(offset, offset + chunkSize);
-      reader.readAsArrayBuffer(slice);
-    };
-
-    reader.onload = (e) => {
-      if (!e.target) {
-        throw new Error('Failed to read file');
-      }
-      const chunk = new Uint8Array(e.target.result as ArrayBuffer);
-      buffer.set(chunk, offset);
-      offset += chunk.length;
-
-      if (offset < file.size) {
-        readNextChunk();
-      } else {
-        resolve();
-      }
-    };
-
-    reader.onerror = reject;
-
-    readNextChunk();
-  });
 }
