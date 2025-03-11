@@ -24,9 +24,7 @@ func main() {
 
 	// Register JavaScript functions
 	js.Global().Set("tiffToJpeg", js.FuncOf(tiffToJpeg))
-	// js.Global().Set("startChunkedConversion", js.FuncOf(startChunkedConversion))
 	js.Global().Set("addChunk", js.FuncOf(addChunk))
-	// js.Global().Set("finishChunkedConversion", js.FuncOf(finishChunkedConversion))
 
 	println("WASM module initialized")
 	<-c // Keep the program running
