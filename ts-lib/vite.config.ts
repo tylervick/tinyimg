@@ -26,6 +26,19 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
-  plugins: [dts({ rollupTypes: true })],
+  plugins: [
+    dts({ rollupTypes: true }),
+    // Enable cross-origin isolation for SharedArrayBuffer
+    {
+      name: 'configure-response-headers',
+      configureServer: (server) => {
+        server.middlewares.use((_req, res, next) => {
+          res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+          res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+          next();
+        });
+      },
+    },
+  ],
   assetsInclude: ['**/*.wasm'],
 });

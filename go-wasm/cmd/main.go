@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"image/jpeg"
+	"structs"
 	"sync"
 	"syscall/js"
 	"unsafe"
@@ -152,4 +153,64 @@ func finishChunkedConversion() unsafe.Pointer {
 	processing = false
 
 	return unsafe.Pointer(unsafe.StringData(jpegBase64))
+}
+
+var allocatedBytes = map[uintptr][]byte{}
+
+// get SharedArrayBuffer pointer
+//
+//go:wasmexport Malloc
+func Malloc(size int32) uintptr {
+	buf := make([]byte, size)
+	ptr := &buf[0]
+	unsafePtr := uintptr(unsafe.Pointer(ptr))
+	allocatedBytes[unsafePtr] = buf
+	return unsafePtr
+}
+
+func getBytes(ptr uintptr) []byte {
+	return allocatedBytes[ptr]
+}
+
+//go:wasmexport Free
+func Free(ptr uintptr) {
+	delete(allocatedBytes, ptr)
+}
+
+type JpegResult struct {
+	_      structs.HostLayout
+	Ptr    uint32
+	Size   int32
+	Status int32 // 0 = success, negative = error
+}
+
+//go:wasmexport Convert
+func Convert(ptr uintptr, size int32) *JpegResult {
+	inputBuf := allocatedBytes[ptr]
+	tiffImage, err := tiff.Decode(bytes.NewReader(inputBuf))
+
+	if err != nil {
+		println("Error decoding TIFF: " + err.Error())
+		return &JpegResult{Status: -1} // Error
+	}
+
+	var jpegBuf bytes.Buffer
+	err = jpeg.Encode(&jpegBuf, tiffImage, &jpeg.Options{Quality: 90})
+	if err != nil {
+		println("Error encoding JPEG: " + err.Error())
+		return &JpegResult{Status: -2}
+	}
+
+	jpegBytes := jpegBuf.Bytes()
+	jpegSize := int32(len(jpegBytes))
+
+	resultPtr := Malloc(jpegSize)
+	resultSlice := getBytes(resultPtr)
+	copy(resultSlice, jpegBytes)
+
+	return &JpegResult{
+		Ptr:    uint32(resultPtr),
+		Size:   jpegSize,
+		Status: 0,
+	}
 }

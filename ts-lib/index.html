@@ -6,8 +6,7 @@
   <title>TIFF to JPEG Converter</title>
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Op
-Sans', 'Helvetica Neue', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'OpSans', 'Helvetica Neue', sans-serif;
       max-width: 800px;
       margin: 0 auto;
       padding: 20px;
@@ -73,16 +72,24 @@ Sans', 'Helvetica Neue', sans-serif;
         return;
       }
 
+      const jpegBlob = await t.streamTiffToJpeg(file);
+      const jpegUrl = URL.createObjectURL(jpegBlob);
+      // console.log(jpegBlob);
+      // console.log(jpegUrl);
+      // window.open(jpegUrl, '_blank');
+      // return
+
       try {
         // Clear previous result
         document.getElementById('imageContainer').innerHTML = '';
 
         // Convert the file
-        const jpegBase64 = await tiff2jpeg.streamTiffToJpeg(file);
+        // const jpegBase64 = await tiff2jpeg.streamTiffToJpeg(file);
 
         // Display the result
         const img = document.createElement('img');
-        img.src = 'data:image/jpeg;base64,' + jpegBase64;
+        img.src = jpegUrl;
+        // img.src = 'data:image/jpeg;base64,' + jpegBase64;
         document.getElementById('imageContainer').appendChild(img);
       } catch (error) {
         console.error('Conversion failed:', error);
