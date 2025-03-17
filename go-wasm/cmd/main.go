@@ -155,7 +155,7 @@ func finishChunkedConversion() unsafe.Pointer {
 
 var allocatedBytes = map[uintptr][]byte{}
 
-// get SharedArrayBuffer pointer
+// Malloc allocates a chunk of memory and returns a pointer to it
 //
 //go:wasmexport Malloc
 func Malloc(size int32) uintptr {
@@ -170,11 +170,14 @@ func getBytes(ptr uintptr) []byte {
 	return allocatedBytes[ptr]
 }
 
+// Free frees a chunk of memory, since the web caller can't release it
+//
 //go:wasmexport Free
 func Free(ptr uintptr) {
 	delete(allocatedBytes, ptr)
 }
 
+// JpegResult
 type JpegResult struct {
 	_      structs.HostLayout
 	Ptr    uint32

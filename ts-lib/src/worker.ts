@@ -1,37 +1,101 @@
-import { Task } from '../lib/executor';
-import '../wasm/wasm_exec';
+import type { WorkerRequest } from '@/types';
+import '@wasm/wasm_exec';
 
 interface WasmExports extends WebAssembly.Exports {
   Malloc: (size: number) => number;
   Free: (ptr: number) => void;
   Convert: (ptr: number, size: number) => number;
+
+  // from wasm_exec.js
+  mem: WebAssembly.Memory;
+}
+
+function isWasmExports(exports: WebAssembly.Exports): exports is WasmExports {
+  return (
+    typeof exports.Malloc === 'function' &&
+    typeof exports.Free === 'function' &&
+    typeof exports.Convert === 'function'
+  );
 }
 
 let wasmExports: WasmExports;
+let wasmRunning = false;
 
-self.onmessage = async (event: MessageEvent<Task>) => {
-  const { type, input, id } = event.data;
-  switch (type) {
-    case 'init':
-      const taskResult = await runInitTask(input);
-      self.postMessage({ data: taskResult, id });
+self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
+  const task = event.data;
+
+  switch (task.type) {
+    case 'init': {
+      try {
+        await runInitTask(task.input);
+        // Set the global state
+        wasmRunning = true;
+
+        // Send success response
+        self.postMessage({
+          id: task.id,
+        });
+
+        // Listen for when the WASM module exits (if it ever does)
+        // This is optional but helps with cleanup
+      } catch (error) {
+        wasmRunning = false;
+        self.postMessage({
+          id: task.id,
+          error,
+        });
+      }
       break;
-    case 'convert':
-      const taskResult2 = await runConvertTask(input);
-      self.postMessage({ data: taskResult2, id });
-      // self.postMessage(taskResult);
+    }
+
+    case 'convert': {
+      try {
+        if (!wasmRunning) {
+          throw new Error('WebAssembly module is not running');
+        }
+
+        const result = await runConvertTask(task.input);
+        self.postMessage({
+          id: task.id,
+          data: result,
+        });
+      } catch (error) {
+        self.postMessage({
+          id: task.id,
+          error,
+        });
+      }
       break;
-    default:
-      throw new Error(`Unknown message type: ${type}`);
+    }
+
+    default: {
+      const exhaustiveCheck: never = task;
+      throw new Error(`Unknown task type: ${exhaustiveCheck}`);
+    }
   }
 };
 
 async function runInitTask(module: WebAssembly.Module): Promise<void> {
   const go = new Go();
   const instance = await WebAssembly.instantiate(module, go.importObject);
-  // todo: set exports
-  wasmExports = instance.exports as WasmExports;
-  return go.run(instance);
+  if (!isWasmExports(instance.exports)) {
+    throw new Error('Invalid exports');
+  }
+  wasmExports = instance.exports;
+
+  // Start the Go WASM program without awaiting - this runs in the background
+  const runningPromise = go.run(instance);
+
+  // Optional: Monitor the promise for when/if the WASM module exits
+  runningPromise
+    .then(() => {
+      wasmRunning = false;
+      console.log('WASM module has exited');
+    })
+    .catch((err) => {
+      wasmRunning = false;
+      console.error('WASM module error:', err);
+    });
 }
 
 async function runConvertTask(file: File): Promise<Blob> {

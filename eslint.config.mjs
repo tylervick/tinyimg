@@ -2,10 +2,9 @@ import { includeIgnoreFile } from '@eslint/compat';
 import pluginJs from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import globals from 'globals';
-import tseslint from 'typescript-eslint';
-
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import tseslint from 'typescript-eslint';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

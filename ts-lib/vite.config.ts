@@ -26,6 +26,12 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+      '@wasm': resolve(__dirname, 'wasm'),
+    },
+  },
   plugins: [
     dts({ rollupTypes: true }),
     // Enable cross-origin isolation for SharedArrayBuffer

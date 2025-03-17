@@ -1,3 +1,3 @@
-import WorkerExecutor from './lib/executor';
+import WorkerController from '@/worker-controller';
 
-export default WorkerExecutor;
+export default WorkerController;

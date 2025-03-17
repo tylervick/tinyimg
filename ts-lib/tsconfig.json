@@ -6,6 +6,10 @@
     "module": "ESNext",
     "lib": ["ESNext", "DOM", "DOM.Iterable", "WebWorker"],
     "skipLibCheck": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@wasm/*": ["./wasm/*"],
+    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -29,5 +33,4 @@
     "noImplicitReturns": true
   },
   "include": ["src"],
-  "exclude": ["src/wasm/wasm_exec.js"]
 }
