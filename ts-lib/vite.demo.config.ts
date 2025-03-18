@@ -1,5 +1,6 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   // Use the base option for GitHub Pages
@@ -35,7 +36,7 @@ export default defineConfig({
   // Enable cross-origin isolation for SharedArrayBuffer
   plugins: [
     {
-      name: 'configure-response-headers',
+      name: 'configure-response-headers-dev-server',
       configureServer: (server) => {
         server.middlewares.use((_req, res, next) => {
           res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
@@ -44,6 +45,17 @@ export default defineConfig({
         });
       },
     },
+    // COI Service Worker for hosts that don't support COOP/COEP (e.g. GitHub Pages)
+    VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'node_modules/coi-serviceworker',
+      filename: 'coi-serviceworker.js',
+      injectRegister: 'script-defer',
+      manifest: false,
+      injectManifest: {
+        injectionPoint: undefined,
+      },
+    }),
   ],
 
   assetsInclude: ['**/*.wasm'],
