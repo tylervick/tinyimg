@@ -21,7 +21,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./ts-lib
-        run: pnpm ci
+        run: pnpm i
 
       - name: Build demo
         working-directory: ./ts-lib
