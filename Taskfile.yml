@@ -24,8 +24,8 @@ tasks:
     desc: 'Copy WASM and wasm_exec.js to TS project'
     cmds:
       - mkdir -p ts-lib/src/wasm
-      - cp go-wasm/dist/wasm_exec.js ts-lib/src/wasm/wasm_exec.js
-      - cp go-wasm/dist/tinyimg.wasm ts-lib/src/wasm/tinyimg.wasm
+      - cp go-wasm/dist/wasm_exec.js ts-lib/wasm/wasm_exec.js
+      - cp go-wasm/dist/tinyimg.wasm ts-lib/wasm/tinyimg.wasm
 
   build:go:
     desc: 'Build WASM binary and include wasm_exec.js'
