@@ -19,6 +19,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:demo": "vite build --config vite.demo.config.ts",
     "preview": "vite preview",
     "build:types": "tsc --emitDeclarationOnly",
     "test": "vitest run",
